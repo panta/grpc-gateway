@@ -162,6 +162,15 @@ func applyTemplate(p param, reg *descriptor.Registry) (string, error) {
 				}); err != nil {
 					return "", err
 				}
+
+				// Local
+				if err := localHandlerTemplate.Execute(w, binding{
+					Binding:           b,
+					Registry:          reg,
+					AllowPatchFeature: p.AllowPatchFeature,
+				}); err != nil {
+					return "", err
+				}
 			}
 		}
 		if methodWithBindingsSeen {
@@ -177,6 +186,11 @@ func applyTemplate(p param, reg *descriptor.Registry) (string, error) {
 		UseRequestContext:  p.UseRequestContext,
 		RegisterFuncSuffix: p.RegisterFuncSuffix,
 	}
+	// Local
+	if err := localTrailerTemplate.Execute(w, tp); err != nil {
+		return "", err
+	}
+
 	if err := trailerTemplate.Execute(w, tp); err != nil {
 		return "", err
 	}
