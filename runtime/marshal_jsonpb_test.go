@@ -42,6 +42,11 @@ func TestJSONPbMarshal(t *testing.T) {
 			"a": examplepb.NumericEnum_ONE,
 			"b": examplepb.NumericEnum_ZERO,
 		},
+		RepeatedEnumAnnotation:   []examplepb.NumericEnum{},
+		EnumValueAnnotation: examplepb.NumericEnum_ONE,
+		RepeatedStringAnnotation: []string{},
+		RepeatedNestedAnnotation: []*examplepb.ABitOfEverything_Nested{},
+		NestedAnnotation: &examplepb.ABitOfEverything_Nested{},
 	}
 
 	for i, spec := range []struct {
@@ -258,6 +263,11 @@ func TestJSONPbEncoder(t *testing.T) {
 			"a": examplepb.NumericEnum_ONE,
 			"b": examplepb.NumericEnum_ZERO,
 		},
+		RepeatedEnumAnnotation:   []examplepb.NumericEnum{},
+		EnumValueAnnotation: examplepb.NumericEnum_ONE,
+		RepeatedStringAnnotation: []string{},
+		RepeatedNestedAnnotation: []*examplepb.ABitOfEverything_Nested{},
+		NestedAnnotation: &examplepb.ABitOfEverything_Nested{},
 	}
 
 	for i, spec := range []struct {
@@ -268,6 +278,9 @@ func TestJSONPbEncoder(t *testing.T) {
 	}{
 		{
 			verifier: func(json string) {
+				// remove trailing delimiter before verifying
+				json = strings.TrimSuffix(json, "\n")
+
 				if strings.ContainsAny(json, " \t\r\n") {
 					t.Errorf("strings.ContainsAny(%q, %q) = true; want false", json, " \t\r\n")
 				}
@@ -346,7 +359,7 @@ func TestJSONPbEncoderFields(t *testing.T) {
 		if err := enc.Encode(fixt.data); err != nil {
 			t.Errorf("enc.Encode(%#v) failed with %v; want success", fixt.data, err)
 		}
-		if got, want := buf.String(), fixt.json; got != want {
+		if got, want := buf.String(), fixt.json + string(m.Delimiter()); got != want {
 			t.Errorf("enc.Encode(%#v) = %q; want %q", fixt.data, got, want)
 		}
 	}
